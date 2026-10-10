@@ -3,10 +3,10 @@
 -- Estructura completa con Usuarios, Categorías, Marcas, Métodos de Pago, Productos, Clientes y Ventas
 -- ========================================================
 
-CREATE DATABASE DistribuidoraBebidasV2;
+CREATE DATABASE DistribuidoraBebidas;
 GO
 
-USE DistribuidoraBebidasV2;
+USE DistribuidoraBebidas;
 GO
 
 -- 1. Tabla de Categorías
