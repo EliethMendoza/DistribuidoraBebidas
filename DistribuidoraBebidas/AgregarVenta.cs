@@ -12,7 +12,6 @@ namespace DistribuidoraBebidas
         private SqlConnection connect;
         private ConexionBD bd = new ConexionBD();
 
-        private string idClienteDefault = "C001";
         private string idMetodoPagoDefault = "MP01";
 
         public AgregarVenta()
@@ -22,6 +21,7 @@ namespace DistribuidoraBebidas
 
             this.Load += new EventHandler(AgregarVenta_Load);
             this.Enter += new EventHandler(AgregarVenta_Enter);
+            CargarClientesEnComboBox();
         }
 
         private void AgregarVenta_Load(object sender, EventArgs e)
@@ -35,6 +35,7 @@ namespace DistribuidoraBebidas
         private void AgregarVenta_Enter(object sender, EventArgs e)
         {
             CargarDatosProductos();
+            CargarClientesEnComboBox();
         }
 
         public bool ComprobarConexion()
@@ -56,6 +57,88 @@ namespace DistribuidoraBebidas
             DatosVentas vData = new DatosVentas();
             List<DatosVentas> listaDatos = vData.ObtenerProductosVentas(filtro);
             dgvProductos.DataSource = listaDatos;
+        }
+
+        private void CargarClientesEnComboBox()
+        {
+            try
+            {
+                using (SqlConnection connect = bd.ObtenerConexion())
+                {
+                    connect.Open();
+                    string query = "SELECT IdCliente, NombreCliente FROM Clientes";
+                    using (SqlCommand cmd = new SqlCommand(query, connect))
+                    {
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            adapter.Fill(dt);
+
+                            cbClientes.DataSource = dt;
+                            cbClientes.DisplayMember = "NombreCliente";
+                            cbClientes.ValueMember = "IdCliente";
+                            cbClientes.SelectedIndex = -1;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar los clientes: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private string ObtenerOInsertarCliente(string nombreCliente, SqlConnection conn, SqlTransaction trans)
+        {
+            string queryCheck = "SELECT IdCliente FROM Clientes WHERE NombreCliente = @nombre";
+            using (SqlCommand cmdCheck = new SqlCommand(queryCheck, conn, trans))
+            {
+                cmdCheck.Parameters.AddWithValue("@nombre", nombreCliente.Trim());
+                object result = cmdCheck.ExecuteScalar();
+
+                if (result != null)
+                {
+                    return result.ToString();
+                }
+            }
+
+            string nuevoIdCliente = "C" + new Random().Next(1000, 9999);
+
+            string queryInsert = "INSERT INTO Clientes (IdCliente, NombreCliente, Fecha) VALUES (@id, @nombre, @fecha)";
+            using (SqlCommand cmdInsert = new SqlCommand(queryInsert, conn, trans))
+            {
+                cmdInsert.Parameters.AddWithValue("@id", nuevoIdCliente);
+                cmdInsert.Parameters.AddWithValue("@nombre", nombreCliente.Trim());
+                cmdInsert.Parameters.AddWithValue("@fecha", DateTime.Now);
+                cmdInsert.ExecuteNonQuery();
+            }
+
+            return nuevoIdCliente;
+        }
+
+        private string ObtenerOCrearClienteGenerico(SqlConnection conn, SqlTransaction trans)
+        {
+            string idGenerico = "C0000";
+
+            string queryCheck = "SELECT COUNT(1) FROM Clientes WHERE IdCliente = @id";
+            using (SqlCommand cmdCheck = new SqlCommand(queryCheck, conn, trans))
+            {
+                cmdCheck.Parameters.AddWithValue("@id", idGenerico);
+                int existe = Convert.ToInt32(cmdCheck.ExecuteScalar());
+
+                if (existe == 0)
+                {
+                    string queryInsert = "INSERT INTO Clientes (IdCliente, NombreCliente, Fecha) VALUES (@id, 'Cliente Genérico', @fecha)";
+                    using (SqlCommand cmdInsert = new SqlCommand(queryInsert, conn, trans))
+                    {
+                        cmdInsert.Parameters.AddWithValue("@id", idGenerico);
+                        cmdInsert.Parameters.AddWithValue("@fecha", DateTime.Now);
+                        cmdInsert.ExecuteNonQuery();
+                    }
+                }
+            }
+
+            return idGenerico;
         }
 
         private void ConfigurarBotonAgregarProductos()
@@ -274,7 +357,9 @@ namespace DistribuidoraBebidas
             impuestos.Text = "0.00";
             total.Text = "0.00";
             txtBuscarProducto.Clear();
+            cbClientes.SelectedIndex = -1;
             CargarDatosProductos();
+            CargarClientesEnComboBox();
         }
 
         private void btnLimpiar_Click(object sender, EventArgs e)
@@ -307,9 +392,22 @@ namespace DistribuidoraBebidas
 
                         try
                         {
-                            string idClienteReal = ObtenerIdValido("SELECT TOP 1 IdCliente FROM Clientes ORDER BY IdCliente ASC", connect, transaction);
-                            string idMetodoReal = ObtenerIdValido("SELECT TOP 1 IdMetodoPago FROM MetodosPago ORDER BY IdMetodoPago ASC", connect, transaction);
+                            string idClienteReal = "";
 
+                            if (string.IsNullOrWhiteSpace(cbClientes.Text))
+                            {
+                                idClienteReal = ObtenerOCrearClienteGenerico(connect, transaction);
+                            }
+                            else if (cbClientes.SelectedValue != null && cbClientes.Text == cbClientes.GetItemText(cbClientes.SelectedItem))
+                            {
+                                idClienteReal = cbClientes.SelectedValue.ToString();
+                            }
+                            else
+                            {
+                                idClienteReal = ObtenerOInsertarCliente(cbClientes.Text.Trim(), connect, transaction);
+                            }
+
+                            string idMetodoReal = ObtenerIdValido("SELECT TOP 1 IdMetodoPago FROM MetodosPago ORDER BY IdMetodoPago ASC", connect, transaction);
                             string idUsuarioReal = SesionUsuario.IdUsuarioLogueado;
 
                             if (string.IsNullOrEmpty(idUsuarioReal))
@@ -321,7 +419,7 @@ namespace DistribuidoraBebidas
 
                             if (string.IsNullOrEmpty(idClienteReal) || string.IsNullOrEmpty(idMetodoReal))
                             {
-                                MessageBox.Show("Asegúrese de tener registrado al menos un Cliente y un Método de Pago en la base de datos.", "Datos Faltantes", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                MessageBox.Show("Asegúrese de tener registrado al menos un Método de Pago en la base de datos.", "Datos Faltantes", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                 transaction.Rollback();
                                 return;
                             }
@@ -339,7 +437,7 @@ namespace DistribuidoraBebidas
                                 cmdVenta.Parameters.AddWithValue("@fecha", DateTime.Now);
                                 cmdVenta.Parameters.AddWithValue("@total", totalVentaVal);
                                 cmdVenta.Parameters.AddWithValue("@idMetodo", idMetodoReal);
-                                cmdVenta.Parameters.AddWithValue("@idUsuario", idUsuarioReal); // <-- Usa el usuario real autenticado
+                                cmdVenta.Parameters.AddWithValue("@idUsuario", idUsuarioReal);
 
                                 cmdVenta.ExecuteNonQuery();
                             }
@@ -386,6 +484,7 @@ namespace DistribuidoraBebidas
                             MessageBox.Show("¡Venta completada exitosamente! (ID: " + idVenta + ")", "Mensaje de Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                             LimpiarCampos();
+                            CargarClientesEnComboBox();
                         }
                         catch (Exception ex)
                         {

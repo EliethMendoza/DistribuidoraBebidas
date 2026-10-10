@@ -45,6 +45,8 @@
             label1 = new Label();
             txtBuscarProducto = new TextBox();
             btnBuscar = new Button();
+            cbClientes = new ComboBox();
+            label6 = new Label();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvProductos).BeginInit();
             panel2.SuspendLayout();
@@ -54,9 +56,9 @@
             // panel1
             // 
             panel1.Controls.Add(dgvProductos);
-            panel1.Location = new Point(14, 77);
+            panel1.Location = new Point(14, 155);
             panel1.Name = "panel1";
-            panel1.Size = new Size(578, 567);
+            panel1.Size = new Size(578, 489);
             panel1.TabIndex = 0;
             // 
             // dgvProductos
@@ -261,10 +263,31 @@
             btnBuscar.UseVisualStyleBackColor = false;
             btnBuscar.Click += btnBuscar_Click;
             // 
+            // cbClientes
+            // 
+            cbClientes.Font = new Font("Segoe UI", 14F);
+            cbClientes.FormattingEnabled = true;
+            cbClientes.Location = new Point(208, 94);
+            cbClientes.Name = "cbClientes";
+            cbClientes.Size = new Size(384, 33);
+            cbClientes.TabIndex = 5;
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Font = new Font("Segoe UI", 14F);
+            label6.Location = new Point(14, 97);
+            label6.Name = "label6";
+            label6.Size = new Size(177, 25);
+            label6.TabIndex = 6;
+            label6.Text = "Seleccionar Cliente:";
+            // 
             // AgregarVenta
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(label6);
+            Controls.Add(cbClientes);
             Controls.Add(btnBuscar);
             Controls.Add(txtBuscarProducto);
             Controls.Add(label1);
@@ -300,5 +323,7 @@
         private Label impuestos;
         private Label subtotal;
         private Button btnLimpiar;
+        private ComboBox cbClientes;
+        private Label label6;
     }
 }
