@@ -332,20 +332,33 @@ namespace DistribuidoraBebidas
 
                         try
                         {
+                            // 1. OBTENER IDS REALES DINÁMICAMENTE DE TU BASE DE DATOS
+                            string idClienteReal = ObtenerIdValido("SELECT TOP 1 IdCliente FROM Clientes ORDER BY IdCliente ASC", connect, transaction);
+                            string idMetodoReal = ObtenerIdValido("SELECT TOP 1 IdMetodoPago FROM MetodosPago ORDER BY IdMetodoPago ASC", connect, transaction);
+                            string idUsuarioReal = ObtenerIdValido("SELECT TOP 1 IdUsuario FROM Usuarios ORDER BY IdUsuario ASC", connect, transaction);
+
+                            // Validar que no estén vacías las tablas en la BD
+                            if (string.IsNullOrEmpty(idClienteReal) || string.IsNullOrEmpty(idMetodoReal) || string.IsNullOrEmpty(idUsuarioReal))
+                            {
+                                MessageBox.Show("Asegúrese de tener registrado al menos un Cliente, un Método de Pago y un Usuario en la base de datos.", "Datos Faltantes", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                transaction.Rollback();
+                                return;
+                            }
+
                             string idVenta = GenerarIdVenta();
                             decimal totalVentaVal = Convert.ToDecimal(total.Text);
 
                             string insertVenta = @"INSERT INTO Ventas (IdVenta, IdCliente, FechaVenta, TotalVenta, IdMetodoPago, IdUsuario) 
-                                                  VALUES (@idVenta, @idCliente, @fecha, @total, @idMetodo, @idUsuario)";
+                                          VALUES (@idVenta, @idCliente, @fecha, @total, @idMetodo, @idUsuario)";
 
                             using (SqlCommand cmdVenta = new SqlCommand(insertVenta, connect, transaction))
                             {
                                 cmdVenta.Parameters.AddWithValue("@idVenta", idVenta);
-                                cmdVenta.Parameters.AddWithValue("@idCliente", idClienteDefault);
+                                cmdVenta.Parameters.AddWithValue("@idCliente", idClienteReal); // <-- Usa el ID real hallado en BD
                                 cmdVenta.Parameters.AddWithValue("@fecha", DateTime.Now);
                                 cmdVenta.Parameters.AddWithValue("@total", totalVentaVal);
-                                cmdVenta.Parameters.AddWithValue("@idMetodo", idMetodoPagoDefault);
-                                cmdVenta.Parameters.AddWithValue("@idUsuario", idUsuarioDefault);
+                                cmdVenta.Parameters.AddWithValue("@idMetodo", idMetodoReal);   // <-- Usa el ID real hallado en BD
+                                cmdVenta.Parameters.AddWithValue("@idUsuario", idUsuarioReal); // <-- Usa el ID real hallado en BD
 
                                 cmdVenta.ExecuteNonQuery();
                             }
@@ -361,7 +374,7 @@ namespace DistribuidoraBebidas
                                 decimal subtotalVal = Convert.ToDecimal(row.Cells["Subtotal"].Value);
 
                                 string insertDetalle = @"INSERT INTO VentasDetalle (IdDetalle, IdVenta, IdProducto, Cantidad, PrecioVenta, Subtotal) 
-                                                        VALUES (@idDetalle, @idVenta, @idProducto, @cant, @precio, @subtotal)";
+                                                VALUES (@idDetalle, @idVenta, @idProducto, @cant, @precio, @subtotal)";
 
                                 using (SqlCommand cmdDetalle = new SqlCommand(insertDetalle, connect, transaction))
                                 {
@@ -409,6 +422,16 @@ namespace DistribuidoraBebidas
                         CargarDatosProductos();
                     }
                 }
+            }
+        }
+
+        // MÉTODO AUXILIAR (Agrégalo al final de la clase AgregarVenta)
+        private string ObtenerIdValido(string query, SqlConnection conn, SqlTransaction trans)
+        {
+            using (SqlCommand cmd = new SqlCommand(query, conn, trans))
+            {
+                object result = cmd.ExecuteScalar();
+                return result != null ? result.ToString() : "";
             }
         }
     }
