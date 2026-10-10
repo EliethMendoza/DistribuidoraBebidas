@@ -12,8 +12,6 @@ namespace DistribuidoraBebidas
         private SqlConnection connect;
         private ConexionBD bd = new ConexionBD();
 
-        // Valores por defecto para entrega directa
-        private string idUsuarioDefault = "U001";
         private string idClienteDefault = "C001";
         private string idMetodoPagoDefault = "MP01";
 
@@ -44,13 +42,8 @@ namespace DistribuidoraBebidas
             return connect.State == ConnectionState.Closed;
         }
 
-        // ==========================================
-        // 1. CONFIGURACIÓN DE TABLAS Y BUSCADOR
-        // ==========================================
-
         private void VincularEventosBuscador()
         {
-            // Vinculación por código para garantizar que el buscador responda al escribir
             txtBuscarProducto.TextChanged -= txtBuscarProducto_TextChanged;
             txtBuscarProducto.TextChanged += txtBuscarProducto_TextChanged;
 
@@ -90,7 +83,6 @@ namespace DistribuidoraBebidas
             dgvCarrito.Columns.Add("PrecioVenta", "Precio");
             dgvCarrito.Columns.Add("Subtotal", "Subtotal");
 
-            // Botón de Sumar en Carrito
             DataGridViewButtonColumn btnSumar = new DataGridViewButtonColumn();
             btnSumar.Name = "btnSumar";
             btnSumar.HeaderText = "+";
@@ -99,7 +91,6 @@ namespace DistribuidoraBebidas
             btnSumar.Width = 35;
             dgvCarrito.Columns.Add(btnSumar);
 
-            // Botón de Restar en Carrito
             DataGridViewButtonColumn btnRestar = new DataGridViewButtonColumn();
             btnRestar.Name = "btnRestar";
             btnRestar.HeaderText = "-";
@@ -113,10 +104,6 @@ namespace DistribuidoraBebidas
             dgvCarrito.MultiSelect = false;
         }
 
-        // ==========================================
-        // 2. LÓGICA DEL BUSCADOR
-        // ==========================================
-
         private void txtBuscarProducto_TextChanged(object sender, EventArgs e)
         {
             CargarDatosProductos(txtBuscarProducto.Text.Trim());
@@ -126,10 +113,6 @@ namespace DistribuidoraBebidas
         {
             CargarDatosProductos(txtBuscarProducto.Text.Trim());
         }
-
-        // ==========================================
-        // 3. ACCIONES EN TABLA DE PRODUCTOS
-        // ==========================================
 
         private void dgvProductos_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -188,10 +171,6 @@ namespace DistribuidoraBebidas
 
             CalcularTotales();
         }
-
-        // ==========================================
-        // 4. ACCIONES EN TABLA DEL CARRITO
-        // ==========================================
 
         private void dgvCarrito_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -267,10 +246,6 @@ namespace DistribuidoraBebidas
             }
         }
 
-        // ==========================================
-        // 5. CÁLCULOS Y PROCESO DE VENTA
-        // ==========================================
-
         private void CalcularTotales()
         {
             int totalCant = 0;
@@ -332,15 +307,21 @@ namespace DistribuidoraBebidas
 
                         try
                         {
-                            // 1. OBTENER IDS REALES DINÁMICAMENTE DE TU BASE DE DATOS
                             string idClienteReal = ObtenerIdValido("SELECT TOP 1 IdCliente FROM Clientes ORDER BY IdCliente ASC", connect, transaction);
                             string idMetodoReal = ObtenerIdValido("SELECT TOP 1 IdMetodoPago FROM MetodosPago ORDER BY IdMetodoPago ASC", connect, transaction);
-                            string idUsuarioReal = ObtenerIdValido("SELECT TOP 1 IdUsuario FROM Usuarios ORDER BY IdUsuario ASC", connect, transaction);
 
-                            // Validar que no estén vacías las tablas en la BD
-                            if (string.IsNullOrEmpty(idClienteReal) || string.IsNullOrEmpty(idMetodoReal) || string.IsNullOrEmpty(idUsuarioReal))
+                            string idUsuarioReal = SesionUsuario.IdUsuarioLogueado;
+
+                            if (string.IsNullOrEmpty(idUsuarioReal))
                             {
-                                MessageBox.Show("Asegúrese de tener registrado al menos un Cliente, un Método de Pago y un Usuario en la base de datos.", "Datos Faltantes", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                MessageBox.Show("No se detectó una sesión de usuario activa. Inicie sesión nuevamente.", "Error de Sesión", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                transaction.Rollback();
+                                return;
+                            }
+
+                            if (string.IsNullOrEmpty(idClienteReal) || string.IsNullOrEmpty(idMetodoReal))
+                            {
+                                MessageBox.Show("Asegúrese de tener registrado al menos un Cliente y un Método de Pago en la base de datos.", "Datos Faltantes", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                 transaction.Rollback();
                                 return;
                             }
@@ -349,16 +330,16 @@ namespace DistribuidoraBebidas
                             decimal totalVentaVal = Convert.ToDecimal(total.Text);
 
                             string insertVenta = @"INSERT INTO Ventas (IdVenta, IdCliente, FechaVenta, TotalVenta, IdMetodoPago, IdUsuario) 
-                                          VALUES (@idVenta, @idCliente, @fecha, @total, @idMetodo, @idUsuario)";
+                                                   VALUES (@idVenta, @idCliente, @fecha, @total, @idMetodo, @idUsuario)";
 
                             using (SqlCommand cmdVenta = new SqlCommand(insertVenta, connect, transaction))
                             {
                                 cmdVenta.Parameters.AddWithValue("@idVenta", idVenta);
-                                cmdVenta.Parameters.AddWithValue("@idCliente", idClienteReal); // <-- Usa el ID real hallado en BD
+                                cmdVenta.Parameters.AddWithValue("@idCliente", idClienteReal);
                                 cmdVenta.Parameters.AddWithValue("@fecha", DateTime.Now);
                                 cmdVenta.Parameters.AddWithValue("@total", totalVentaVal);
-                                cmdVenta.Parameters.AddWithValue("@idMetodo", idMetodoReal);   // <-- Usa el ID real hallado en BD
-                                cmdVenta.Parameters.AddWithValue("@idUsuario", idUsuarioReal); // <-- Usa el ID real hallado en BD
+                                cmdVenta.Parameters.AddWithValue("@idMetodo", idMetodoReal);
+                                cmdVenta.Parameters.AddWithValue("@idUsuario", idUsuarioReal); // <-- Usa el usuario real autenticado
 
                                 cmdVenta.ExecuteNonQuery();
                             }
@@ -374,7 +355,7 @@ namespace DistribuidoraBebidas
                                 decimal subtotalVal = Convert.ToDecimal(row.Cells["Subtotal"].Value);
 
                                 string insertDetalle = @"INSERT INTO VentasDetalle (IdDetalle, IdVenta, IdProducto, Cantidad, PrecioVenta, Subtotal) 
-                                                VALUES (@idDetalle, @idVenta, @idProducto, @cant, @precio, @subtotal)";
+                                                         VALUES (@idDetalle, @idVenta, @idProducto, @cant, @precio, @subtotal)";
 
                                 using (SqlCommand cmdDetalle = new SqlCommand(insertDetalle, connect, transaction))
                                 {
@@ -425,7 +406,6 @@ namespace DistribuidoraBebidas
             }
         }
 
-        // MÉTODO AUXILIAR (Agrégalo al final de la clase AgregarVenta)
         private string ObtenerIdValido(string query, SqlConnection conn, SqlTransaction trans)
         {
             using (SqlCommand cmd = new SqlCommand(query, conn, trans))

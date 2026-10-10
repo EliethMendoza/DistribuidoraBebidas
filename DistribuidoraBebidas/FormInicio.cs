@@ -43,7 +43,6 @@ namespace DistribuidoraBebidas
             {
                 using (SqlConnection connect = bd.ObtenerConexion())
                 {
-                    // Consulta adaptada a las columnas de la tabla Usuarios
                     string selectData = "SELECT * FROM Usuarios WHERE NombreUsuario = @usern AND Contraseña = @pass";
 
                     using (SqlCommand cmd = new SqlCommand(selectData, connect))
@@ -60,6 +59,11 @@ namespace DistribuidoraBebidas
 
                             if (table.Rows.Count > 0)
                             {
+                                // GUARDAR EL ID Y NOMBRE DEL USUARIO AUTENTICADO
+                                DataRow row = table.Rows[0];
+                                SesionUsuario.IdUsuarioLogueado = row["IdUsuario"].ToString();
+                                SesionUsuario.NombreUsuarioLogueado = row["NombreUsuario"].ToString();
+
                                 MessageBox.Show("¡Inicio de sesión exitoso!", "Bienvenido", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                                 FormPrincipal formP = new FormPrincipal();

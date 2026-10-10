@@ -57,6 +57,8 @@
             dgvVentas.RowHeadersVisible = false;
             dgvVentas.Size = new Size(1004, 225);
             dgvVentas.TabIndex = 1;
+            dgvVentas.CellClick += dgvVentas_CellClick;
+            dgvVentas.SelectionChanged += dgvVentas_SelectionChanged;
             // 
             // btnBuscarVenta
             // 
@@ -72,6 +74,7 @@
             btnBuscarVenta.Size = new Size(45, 36);
             btnBuscarVenta.TabIndex = 7;
             btnBuscarVenta.UseVisualStyleBackColor = false;
+            btnBuscarVenta.Click += btnBuscarVenta_Click;
             // 
             // txtBuscarVenta
             // 
@@ -80,6 +83,7 @@
             txtBuscarVenta.Name = "txtBuscarVenta";
             txtBuscarVenta.Size = new Size(358, 36);
             txtBuscarVenta.TabIndex = 6;
+            txtBuscarVenta.TextChanged += txtBuscarVenta_TextChanged;
             // 
             // label1
             // 
@@ -113,6 +117,7 @@
             btnBuscarVentaDetalles.Size = new Size(45, 36);
             btnBuscarVentaDetalles.TabIndex = 11;
             btnBuscarVentaDetalles.UseVisualStyleBackColor = false;
+            btnBuscarVentaDetalles.Click += btnBuscarVentaDetalles_Click;
             // 
             // txtBuscarVentaDetalles
             // 
@@ -121,6 +126,7 @@
             txtBuscarVentaDetalles.Name = "txtBuscarVentaDetalles";
             txtBuscarVentaDetalles.Size = new Size(358, 36);
             txtBuscarVentaDetalles.TabIndex = 10;
+            txtBuscarVentaDetalles.TextChanged += txtBuscarVentaDetalles_TextChanged;
             // 
             // label2
             // 
@@ -168,6 +174,8 @@
             Controls.Add(label1);
             Name = "VentasDetalles";
             Size = new Size(1085, 665);
+            Load += VentasDetalles_Load;
+            Enter += VentasDetalles_Enter;
             ((System.ComponentModel.ISupportInitialize)dgvVentas).EndInit();
             panel1.ResumeLayout(false);
             panel2.ResumeLayout(false);
