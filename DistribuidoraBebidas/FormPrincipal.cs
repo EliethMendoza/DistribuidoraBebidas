@@ -36,6 +36,7 @@ namespace DistribuidoraBebidas
         private void btnInicio_Click(object sender, EventArgs e)
         {
             panelAdmin1.Visible = true;
+            panelAdmin1.CargarDatosDashboard();
             adminUsuarios1.Visible = false;
             adminAgregarClientes1.Visible = false;
             agregarCategoria1.Visible = false;

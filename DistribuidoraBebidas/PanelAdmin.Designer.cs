@@ -31,21 +31,21 @@
             panel1 = new Panel();
             panel4 = new Panel();
             label5 = new Label();
-            label6 = new Label();
+            lblIngresosTotales = new Label();
             pictureBox3 = new PictureBox();
             panel3 = new Panel();
             label3 = new Label();
-            label4 = new Label();
+            lblClientes = new Label();
             pictureBox2 = new PictureBox();
             panel5 = new Panel();
             label7 = new Label();
-            label8 = new Label();
+            lblIngresosHoy = new Label();
             pictureBox4 = new PictureBox();
             panel2 = new Panel();
             label2 = new Label();
-            label1 = new Label();
+            lblUsuarios = new Label();
             pictureBox1 = new PictureBox();
-            dgvClientes = new DataGridView();
+            dgvVentas = new DataGridView();
             panel6 = new Panel();
             label9 = new Label();
             panel1.SuspendLayout();
@@ -57,7 +57,7 @@
             ((System.ComponentModel.ISupportInitialize)pictureBox4).BeginInit();
             panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dgvClientes).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvVentas).BeginInit();
             panel6.SuspendLayout();
             SuspendLayout();
             // 
@@ -77,7 +77,7 @@
             // 
             panel4.BackColor = Color.FromArgb(0, 115, 209);
             panel4.Controls.Add(label5);
-            panel4.Controls.Add(label6);
+            panel4.Controls.Add(lblIngresosTotales);
             panel4.Controls.Add(pictureBox3);
             panel4.Location = new Point(813, 26);
             panel4.Name = "panel4";
@@ -94,16 +94,16 @@
             label5.TabIndex = 2;
             label5.Text = "Ingresos Totales";
             // 
-            // label6
+            // lblIngresosTotales
             // 
-            label6.AutoSize = true;
-            label6.Font = new Font("Segoe UI", 14F);
-            label6.ForeColor = Color.White;
-            label6.Location = new Point(121, 42);
-            label6.Name = "label6";
-            label6.Size = new Size(22, 25);
-            label6.TabIndex = 1;
-            label6.Text = "0";
+            lblIngresosTotales.AutoSize = true;
+            lblIngresosTotales.Font = new Font("Segoe UI", 14F);
+            lblIngresosTotales.ForeColor = Color.White;
+            lblIngresosTotales.Location = new Point(121, 42);
+            lblIngresosTotales.Name = "lblIngresosTotales";
+            lblIngresosTotales.Size = new Size(22, 25);
+            lblIngresosTotales.TabIndex = 1;
+            lblIngresosTotales.Text = "0";
             // 
             // pictureBox3
             // 
@@ -119,7 +119,7 @@
             // 
             panel3.BackColor = Color.FromArgb(0, 115, 209);
             panel3.Controls.Add(label3);
-            panel3.Controls.Add(label4);
+            panel3.Controls.Add(lblClientes);
             panel3.Controls.Add(pictureBox2);
             panel3.Location = new Point(279, 26);
             panel3.Name = "panel3";
@@ -136,16 +136,16 @@
             label3.TabIndex = 2;
             label3.Text = "Todos los Clientes";
             // 
-            // label4
+            // lblClientes
             // 
-            label4.AutoSize = true;
-            label4.Font = new Font("Segoe UI", 14F);
-            label4.ForeColor = Color.White;
-            label4.Location = new Point(121, 42);
-            label4.Name = "label4";
-            label4.Size = new Size(22, 25);
-            label4.TabIndex = 1;
-            label4.Text = "0";
+            lblClientes.AutoSize = true;
+            lblClientes.Font = new Font("Segoe UI", 14F);
+            lblClientes.ForeColor = Color.White;
+            lblClientes.Location = new Point(121, 42);
+            lblClientes.Name = "lblClientes";
+            lblClientes.Size = new Size(22, 25);
+            lblClientes.TabIndex = 1;
+            lblClientes.Text = "0";
             // 
             // pictureBox2
             // 
@@ -161,7 +161,7 @@
             // 
             panel5.BackColor = Color.FromArgb(0, 115, 209);
             panel5.Controls.Add(label7);
-            panel5.Controls.Add(label8);
+            panel5.Controls.Add(lblIngresosHoy);
             panel5.Controls.Add(pictureBox4);
             panel5.Location = new Point(546, 26);
             panel5.Name = "panel5";
@@ -178,16 +178,16 @@
             label7.TabIndex = 2;
             label7.Text = "Ingresos de Hoy";
             // 
-            // label8
+            // lblIngresosHoy
             // 
-            label8.AutoSize = true;
-            label8.Font = new Font("Segoe UI", 14F);
-            label8.ForeColor = Color.White;
-            label8.Location = new Point(121, 42);
-            label8.Name = "label8";
-            label8.Size = new Size(22, 25);
-            label8.TabIndex = 1;
-            label8.Text = "0";
+            lblIngresosHoy.AutoSize = true;
+            lblIngresosHoy.Font = new Font("Segoe UI", 14F);
+            lblIngresosHoy.ForeColor = Color.White;
+            lblIngresosHoy.Location = new Point(121, 42);
+            lblIngresosHoy.Name = "lblIngresosHoy";
+            lblIngresosHoy.Size = new Size(22, 25);
+            lblIngresosHoy.TabIndex = 1;
+            lblIngresosHoy.Text = "0";
             // 
             // pictureBox4
             // 
@@ -203,7 +203,7 @@
             // 
             panel2.BackColor = Color.FromArgb(0, 115, 209);
             panel2.Controls.Add(label2);
-            panel2.Controls.Add(label1);
+            panel2.Controls.Add(lblUsuarios);
             panel2.Controls.Add(pictureBox1);
             panel2.Location = new Point(17, 26);
             panel2.Name = "panel2";
@@ -220,16 +220,16 @@
             label2.TabIndex = 2;
             label2.Text = "Todos los Usuarios";
             // 
-            // label1
+            // lblUsuarios
             // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 14F);
-            label1.ForeColor = Color.White;
-            label1.Location = new Point(121, 42);
-            label1.Name = "label1";
-            label1.Size = new Size(22, 25);
-            label1.TabIndex = 1;
-            label1.Text = "0";
+            lblUsuarios.AutoSize = true;
+            lblUsuarios.Font = new Font("Segoe UI", 14F);
+            lblUsuarios.ForeColor = Color.White;
+            lblUsuarios.Location = new Point(121, 42);
+            lblUsuarios.Name = "lblUsuarios";
+            lblUsuarios.Size = new Size(22, 25);
+            lblUsuarios.TabIndex = 1;
+            lblUsuarios.Text = "0";
             // 
             // pictureBox1
             // 
@@ -241,20 +241,22 @@
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
             // 
-            // dgvClientes
+            // dgvVentas
             // 
-            dgvClientes.BackgroundColor = SystemColors.GradientActiveCaption;
-            dgvClientes.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvClientes.Location = new Point(17, 56);
-            dgvClientes.Name = "dgvClientes";
-            dgvClientes.Size = new Size(1028, 312);
-            dgvClientes.TabIndex = 1;
+            dgvVentas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvVentas.BackgroundColor = SystemColors.GradientActiveCaption;
+            dgvVentas.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvVentas.Location = new Point(17, 56);
+            dgvVentas.Name = "dgvVentas";
+            dgvVentas.RowHeadersVisible = false;
+            dgvVentas.Size = new Size(1028, 312);
+            dgvVentas.TabIndex = 1;
             // 
             // panel6
             // 
             panel6.BackColor = Color.White;
             panel6.Controls.Add(label9);
-            panel6.Controls.Add(dgvClientes);
+            panel6.Controls.Add(dgvVentas);
             panel6.Location = new Point(11, 263);
             panel6.Name = "panel6";
             panel6.Size = new Size(1061, 390);
@@ -266,9 +268,9 @@
             label9.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label9.Location = new Point(17, 16);
             label9.Name = "label9";
-            label9.Size = new Size(150, 25);
+            label9.Size = new Size(145, 25);
             label9.TabIndex = 8;
-            label9.Text = "Clientes de Hoy";
+            label9.Text = "Ventas de Hoy:";
             // 
             // PanelAdmin
             // 
@@ -291,7 +293,7 @@
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dgvClientes).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvVentas).EndInit();
             panel6.ResumeLayout(false);
             panel6.PerformLayout();
             ResumeLayout(false);
@@ -303,20 +305,20 @@
         private Panel panel2;
         private PictureBox pictureBox1;
         private Label label2;
-        private Label label1;
+        private Label lblUsuarios;
         private Panel panel3;
         private Label label3;
-        private Label label4;
+        private Label lblClientes;
         private PictureBox pictureBox2;
         private Panel panel4;
         private Label label5;
-        private Label label6;
+        private Label lblIngresosTotales;
         private PictureBox pictureBox3;
         private Panel panel5;
         private Label label7;
-        private Label label8;
+        private Label lblIngresosHoy;
         private PictureBox pictureBox4;
-        private DataGridView dgvClientes;
+        private DataGridView dgvVentas;
         private Panel panel6;
         private Label label9;
     }
