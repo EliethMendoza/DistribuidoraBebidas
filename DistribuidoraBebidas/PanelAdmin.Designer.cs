@@ -243,11 +243,16 @@
             // 
             // dgvVentas
             // 
+            dgvVentas.AllowUserToAddRows = false;
+            dgvVentas.AllowUserToDeleteRows = false;
+            dgvVentas.AllowUserToResizeColumns = false;
+            dgvVentas.AllowUserToResizeRows = false;
             dgvVentas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvVentas.BackgroundColor = SystemColors.GradientActiveCaption;
             dgvVentas.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvVentas.Location = new Point(17, 56);
             dgvVentas.Name = "dgvVentas";
+            dgvVentas.ReadOnly = true;
             dgvVentas.RowHeadersVisible = false;
             dgvVentas.Size = new Size(1028, 312);
             dgvVentas.TabIndex = 1;

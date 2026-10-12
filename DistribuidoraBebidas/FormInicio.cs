@@ -59,16 +59,42 @@ namespace DistribuidoraBebidas
 
                             if (table.Rows.Count > 0)
                             {
-                                // GUARDAR EL ID Y NOMBRE DEL USUARIO AUTENTICADO
                                 DataRow row = table.Rows[0];
+
+                                // Validar si el usuario está activo
+                                string estado = row["Estado"]?.ToString() ?? "Activo";
+                                if (estado != "Activo")
+                                {
+                                    MessageBox.Show("Este usuario se encuentra inactivo.", "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    return;
+                                }
+
+                                // GUARDAR LOS DATOS DEL USUARIO Y SU CARGO EN LA SESIÓN
                                 SesionUsuario.IdUsuarioLogueado = row["IdUsuario"].ToString();
                                 SesionUsuario.NombreUsuarioLogueado = row["NombreUsuario"].ToString();
+                                SesionUsuario.CargoUsuario = row["Cargo"].ToString();
 
                                 MessageBox.Show("¡Inicio de sesión exitoso!", "Bienvenido", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                                FormPrincipal formP = new FormPrincipal();
-                                formP.Show();
-                                this.Hide();
+                                // EVALUAR EL ROL PARA ABRIR EL FORMULARIO CORRESPONDIENTE
+                                string cargo = SesionUsuario.CargoUsuario;
+
+                                if (cargo == "Administrador")
+                                {
+                                    FormPrincipal formP = new FormPrincipal();
+                                    formP.Show();
+                                    this.Hide();
+                                }
+                                else if (cargo == "Vendedor")
+                                {
+                                    FormVendedores formV = new FormVendedores();
+                                    formV.Show();
+                                    this.Hide();
+                                }
+                                else
+                                {
+                                    MessageBox.Show("El cargo del usuario no es válido.", "Error de Rol", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
                             }
                             else
                             {

@@ -20,8 +20,7 @@ namespace DistribuidoraBebidas
             InitializeComponent();
             connect = bd.ObtenerConexion();
 
-            CargarMarcas();
-            CargarCategorias();
+            RecargarCombos();
             CargarDatosTabla();
         }
 
@@ -291,6 +290,17 @@ namespace DistribuidoraBebidas
                                 MessageBox.Show("¡Eliminado exitosamente!", "Mensaje de Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }
                         }
+                        catch (SqlException ex)
+                        {
+                            if (ex.Number == 547)
+                            {
+                                MessageBox.Show("No se puede eliminar este producto porque ya tiene ventas registradas en el sistema.", "Acción Denegada", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Conexión fallida: " + ex.Message, "Mensaje de Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
                         catch (Exception ex)
                         {
                             MessageBox.Show("Conexión fallida: " + ex.Message, "Mensaje de Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -302,6 +312,12 @@ namespace DistribuidoraBebidas
                     }
                 }
             }
+        }
+
+        public void RecargarCombos()
+        {
+            CargarMarcas();
+            CargarCategorias();
         }
     }
 }

@@ -71,9 +71,14 @@ namespace DistribuidoraBebidas
             adminAgregarClientes1.Visible = false;
             agregarProductos1.Visible = true;
             agregarCategoria1.Visible = false;
+            agregarMarcas1.Visible = false;
 
             AgregarProductos form = agregarProductos1 as AgregarProductos;
-            if (form != null) { form.CargarDatosTabla(); }
+            if (form != null)
+            {
+                form.RecargarCombos();
+                form.CargarDatosTabla();
+            }
         }
         private void btnCategorias_Click(object sender, EventArgs e)
         {
@@ -82,6 +87,7 @@ namespace DistribuidoraBebidas
             adminAgregarClientes1.Visible = false;
             agregarProductos1.Visible = false;
             agregarCategoria1.Visible = true;
+            agregarMarcas1.Visible = false;
             AgregarCategoria form = agregarCategoria1 as AgregarCategoria;
             if (form != null) { form.CargarDatosTabla(); }
         }
