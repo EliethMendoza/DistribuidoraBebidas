@@ -8,8 +8,8 @@ namespace DistribuidoraBebidas
     internal class ConexionBD
     {
         private string cadenaConexion =
-            "Server=localhost\\SQL2026;" +
-            "Database=DistribuidoraBebidasV2;" +
+            "Server=localhost\\SQLEXPRESS;" +
+            "Database=DistribuidoraBebidas;" +
             "Integrated Security=True;" +
             "TrustServerCertificate=True;";
 
