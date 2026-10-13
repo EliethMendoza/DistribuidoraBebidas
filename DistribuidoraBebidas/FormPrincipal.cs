@@ -17,7 +17,7 @@ namespace DistribuidoraBebidas
 
         private void btn_cerrar_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("¿Estas seguro de cerrar sesion?", "Confirmation Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show("¿Estas seguro de cerrar sesion?", "Mensaje de confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 Application.Exit();
             }
@@ -25,7 +25,7 @@ namespace DistribuidoraBebidas
 
         private void btn_cerrarSesion_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to exit?", "Confirmation Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show("Estás seguro que quieres salir?", "Mensaje de confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 FormInicio formularioInicio = new FormInicio();
                 formularioInicio.Show();
@@ -113,8 +113,6 @@ namespace DistribuidoraBebidas
             agregarCategoria1.Visible = false;
             agregarMarcas1.Visible = false;
             agregarVenta1.Visible = true;
-            /*AgregarVenta form = agregarVenta1 as AgregarVenta;
-            if (form != null) { form.CargarDatosTabla(); }*/
         }
 
         private void btnVentaDetalles_Click(object sender, EventArgs e)
