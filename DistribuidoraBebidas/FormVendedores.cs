@@ -123,6 +123,12 @@ namespace DistribuidoraBebidas
             agregarCategoria1.Visible = false;
             agregarMarcas1.Visible = false;
             ventasDetalles1.Visible = true;
+
+            VentasDetalles form = ventasDetalles1 as VentasDetalles;
+            if (form != null)
+            {
+                form.CargarTablaVentas();
+            }
         }
     
     }
