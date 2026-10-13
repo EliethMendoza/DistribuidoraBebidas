@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.Windows.Forms;
 
 namespace DistribuidoraBebidas
@@ -11,6 +12,8 @@ namespace DistribuidoraBebidas
     {
         private SqlConnection connect;
         private ConexionBD bd = new ConexionBD();
+
+        private PrintDocument printDocument1 = new PrintDocument();
 
         private string idMetodoPagoDefault = "MP01";
 
@@ -21,6 +24,9 @@ namespace DistribuidoraBebidas
 
             this.Load += new EventHandler(AgregarVenta_Load);
             this.Enter += new EventHandler(AgregarVenta_Enter);
+
+            printDocument1.PrintPage += new PrintPageEventHandler(printDocument1_PrintPage);
+
             CargarClientesEnComboBox();
         }
 
@@ -481,6 +487,16 @@ namespace DistribuidoraBebidas
                             }
 
                             transaction.Commit();
+
+                            printDocument1.DefaultPageSettings.PaperSize = new System.Drawing.Printing.PaperSize("Ticket", 315, 600);
+                            printDocument1.DefaultPageSettings.Margins = new System.Drawing.Printing.Margins(5, 5, 5, 5);
+
+                            PrintPreviewDialog previewDlg = new PrintPreviewDialog();
+                            previewDlg.Document = printDocument1;
+                            previewDlg.Width = 400;
+                            previewDlg.Height = 600;
+                            previewDlg.ShowDialog();
+
                             MessageBox.Show("¡Venta completada exitosamente! (ID: " + idVenta + ")", "Mensaje de Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                             LimpiarCampos();
@@ -503,6 +519,73 @@ namespace DistribuidoraBebidas
                     }
                 }
             }
+        }
+
+        // Método que dibuja el diseño del ticket térmico en el documento de impresión
+        private void printDocument1_PrintPage(object sender, PrintPageEventArgs e)
+        {
+            Font fuenteTitulo = new Font("Consolas", 11, FontStyle.Bold);
+            Font fuenteNegrita = new Font("Consolas", 9, FontStyle.Bold);
+            Font fuenteNormal = new Font("Consolas", 8, FontStyle.Regular);
+
+            float x = 5;
+            float y = 5;
+
+            // --- ENCABEZADO ---
+            e.Graphics.DrawString("DISTRIBUIDORA BEBIDAS", fuenteTitulo, Brushes.Black, x + 20, y);
+            y += 18;
+            e.Graphics.DrawString("RUC: J0310000000000", fuenteNormal, Brushes.Black, x + 45, y);
+            y += 14;
+            e.Graphics.DrawString("Managua, Nicaragua", fuenteNormal, Brushes.Black, x + 40, y);
+            y += 18;
+
+            e.Graphics.DrawString("----------------------------------------", fuenteNormal, Brushes.Black, x, y);
+            y += 14;
+
+            // --- DATOS ---
+            e.Graphics.DrawString("Fecha: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm"), fuenteNormal, Brushes.Black, x, y);
+            y += 14;
+            e.Graphics.DrawString("Cliente: " + (cbClientes.Text == "" ? "Cliente Genérico" : cbClientes.Text), fuenteNormal, Brushes.Black, x, y);
+            y += 14;
+            e.Graphics.DrawString("Atendido por: " + SesionUsuario.IdUsuarioLogueado, fuenteNormal, Brushes.Black, x, y);
+            y += 18;
+
+            e.Graphics.DrawString("----------------------------------------", fuenteNormal, Brushes.Black, x, y);
+            y += 14;
+
+            // --- DETALLE ---
+            e.Graphics.DrawString("CANT  DESCRIPCIÓN          TOTAL", fuenteNegrita, Brushes.Black, x, y);
+            y += 14;
+            e.Graphics.DrawString("----------------------------------------", fuenteNormal, Brushes.Black, x, y);
+            y += 14;
+
+            foreach (DataGridViewRow row in dgvCarrito.Rows)
+            {
+                string cant = row.Cells["Cantidad"].Value.ToString();
+                string producto = row.Cells["NombreProducto"].Value.ToString();
+                string subtotalItem = row.Cells["Subtotal"].Value.ToString();
+
+                if (producto.Length > 16)
+                    producto = producto.Substring(0, 16);
+
+                string lineaItem = $"{cant.PadLeft(3)}   {producto.PadRight(16)} {subtotalItem.PadLeft(7)}";
+                e.Graphics.DrawString(lineaItem, fuenteNormal, Brushes.Black, x, y);
+                y += 14;
+            }
+
+            e.Graphics.DrawString("----------------------------------------", fuenteNormal, Brushes.Black, x, y);
+            y += 14;
+
+            // --- TOTALES ---
+            e.Graphics.DrawString("SUBTOTAL:".PadRight(22) + "C$ " + subtotal.Text.PadLeft(10), fuenteNormal, Brushes.Black, x, y);
+            y += 14;
+            e.Graphics.DrawString("IVA (15%):".PadRight(22) + "C$ " + impuestos.Text.PadLeft(10), fuenteNormal, Brushes.Black, x, y);
+            y += 16;
+            e.Graphics.DrawString("TOTAL A PAGAR:".PadRight(19) + "C$ " + total.Text.PadLeft(10), fuenteNegrita, Brushes.Black, x, y);
+            y += 22;
+
+            // --- PIE ---
+            e.Graphics.DrawString("¡Gracias por su compra!", fuenteNegrita, Brushes.Black, x + 35, y);
         }
 
         private string ObtenerIdValido(string query, SqlConnection conn, SqlTransaction trans)
